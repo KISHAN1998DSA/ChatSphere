@@ -8,7 +8,7 @@ import {
   Text,
   useToast
 } from '@chakra-ui/react';
-import { useEffect, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { getSender, getSenderFull } from '../config/ChatLogics';
 import { ChatState } from '../Context/ChatProvider';
 import ProfileModal from './miscellaneous/ProfileModal';
@@ -33,7 +33,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
   const { user, selectedChat, setSelectedChat, notification, setNotification } =
     ChatState();
 
-  const fetchMessages = async () => {
+  const fetchMessages = useCallback(async () => {
     if (!selectedChat) return;
 
     try {
@@ -64,7 +64,7 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
         position: 'bottom'
       });
     }
-  };
+  }, [selectedChat, user.token, toast]);
 
   const sendMessage = async (event) => {
     if (event.key === 'Enter' && newMessage) {
@@ -109,13 +109,14 @@ const SingleChat = ({ fetchAgain, setFetchAgain }) => {
     socket.on('connected', () => setSocketConnected(true));
     socket.on('typing', () => setIsTyping(true));
     socket.on('stop typing', () => setIsTyping(false));
+    // eslint-disable-next-line
   }, []);
 
   useEffect(() => {
     fetchMessages();
 
     selectedChatCompare = selectedChat;
-  }, [selectedChat]);
+  }, [selectedChat, fetchMessages]);
 
   useEffect(() => {
     socket.on('message received', (newMessageReceived) => {

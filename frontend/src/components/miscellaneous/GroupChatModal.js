@@ -46,7 +46,7 @@ const GroupChatModal = ({ children }) => {
         }
       };
 
-      const { data } = await axios.get(`/api/user?search=${search}`, config);
+      const { data } = await axios.get(`/api/user?search=${query}`, config);
       setLoading(false);
       setSearchResult(data);
     } catch (error) {
@@ -115,7 +115,7 @@ const GroupChatModal = ({ children }) => {
   };
 
   const handleGroup = (userToAdd) => {
-    if (selectedUsers.includes(userToAdd)) {
+    if (selectedUsers.find((u) => u._id === userToAdd._id)) {
       toast({
         title: 'User already added',
         status: 'warning',
@@ -157,6 +157,7 @@ const GroupChatModal = ({ children }) => {
               <Input
                 placeholder="Add Users eg: John, Jane"
                 mb={1}
+                value={search}
                 onChange={(e) => handleSearch(e.target.value)}
               />
             </FormControl>
